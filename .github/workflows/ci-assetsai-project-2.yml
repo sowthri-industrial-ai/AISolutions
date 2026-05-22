@@ -1,0 +1,25 @@
+name: "CI · assetsai/project-2"
+
+# Path-filtered: runs ONLY when this project's files change, so it never
+# overlaps with any other project's CI.
+on:
+  push:
+    paths:
+      - 'assetsai/projects/project-2/**'
+      - '.github/workflows/ci-assetsai-project-2.yml'
+  pull_request:
+    paths:
+      - 'assetsai/projects/project-2/**'
+
+# Per-project concurrency group: rapid pushes to THIS project supersede each
+# other; other projects' workflows are unaffected and run in parallel.
+concurrency:
+  group: ci-assetsai-project-2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "CI stub for assetsai/projects/project-2 — add build & test steps here."
