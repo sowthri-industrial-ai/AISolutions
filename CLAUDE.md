@@ -28,8 +28,8 @@ linked docs. Update the Projects table and Milestones as work progresses.
 
 ```
 AISolutions/
-├── README.md · LICENSE · .gitignore · CLAUDE.md · gitprojectmanual.md
-├── .github/workflows/        ci-<track>-project-N.yml — one per project
+├── README.md · LICENSE · .gitignore · .gitattributes · CLAUDE.md · gitprojectmanual.md
+├── .github/        workflows/ci-<track>-project-N.yml (per project) · pull_request_template.md
 ├── docs/                     repo-wide documentation
 ├── portfoliowebsite/         the portfolio website (stack not yet chosen)
 ├── agenticai/ · assetsai/ · physicalai/      the three fixed tracks
@@ -69,27 +69,24 @@ tracks, not a track itself.
 - Folder and branch names: lowercase, hyphenated. Feature branches: `<track>-project-<N>-<desc>`.
 - `portfoliowebsite/` stack is not yet decided.
 
-## Claude Code plugins
+## Claude Code tooling
 
-Recommended set for this repo. **Not yet installed** — actual installation is a separate
-task that should follow an audit → phased plan → step-by-step approval, via the official
-plugin marketplace only. Keep the total toolset minimal (≤ 6–8 plugins).
+Corrected against how Claude Code plugins actually work — not every item here is an
+installable "plugin":
 
-Plugins are a **repo-wide** concern — configured at the repo root, never per-project. This
-file holds the recommendation and rationale; when a plugin is installed, its enablement is
-committed to the repo-root `.claude/settings.json`, so every session on the repo gets the
-same set by default.
+| Tool | What it is | How to enable |
+|------|-----------|---------------|
+| **Code Review** | The one installable plugin — on-demand local code review (`/code-review`) | `/plugin install code-review@claude-plugins-official`, then `/reload-plugins`. ⚠️ Research preview — may require a Team/Enterprise plan. |
+| **Security Review** | A **built-in** command, not a plugin | Already available — run `/security-review`. Nothing to install. |
+| **Auto Memory** | Built-in persistent cross-session context | Already active. |
+| **codeburn** | A **standalone CLI tool**, not a Claude Code plugin — cost/observability dashboard | Optional; install separately from `github.com/getagentseal/codeburn`. |
 
-| Plugin | Why it fits this repo | Status |
-|--------|----------------------|--------|
-| **Code Review** (Anthropic) | Multi-agent, confidence-scored PR review; enforces this file's rules | Recommended |
-| **Security Review** (Anthropic) | Scans injection / auth / dependency issues. Wire to PR-open only, **advisory & non-blocking** until its signal is calibrated | Recommended |
-| **codeburn** | Read-only cost & success-rate dashboard from session history | Optional — observability |
-| **Auto Memory** | Persistent cross-session context | Built into Claude Code — already active |
+Plugins are a repo-wide concern — configured at the repo root, never per-project. To share an
+installed plugin set with everyone who clones the repo, commit it to `.claude/settings.json`
+under `enabledPlugins`. Keep the set minimal.
 
-**Deferred:** workflow-framework plugins (Superpowers, gstack, …) and output-style plugins —
-excluded to keep the toolset minimal. Revisit a frontend/design plugin only once
-`portfoliowebsite/` development actually begins.
+**Deferred:** workflow-framework and output-style plugins — excluded to keep tooling minimal.
+Revisit a frontend/design plugin only once `portfoliowebsite/` development begins.
 
 ## Milestones
 
@@ -97,6 +94,7 @@ excluded to keep the toolset minimal. Revisit a frontend/design plugin only once
 - **2026-05-22** — 9 project folders added with per-folder independence + path-filtered CI.
 - **2026-05-23** — `gitprojectmanual.md` Git/GitHub runbook added.
 - **2026-05-23** — `CLAUDE.md` created as the repo's working memory.
+- **2026-05-23** — Branch protection on `main`; PR template + `.gitattributes` added; plugin/tooling guidance corrected to match how Claude Code actually works.
 
 Authoritative history is `git log` + merged PRs — keep this list to high-level milestones only.
 
