@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import { ObservabilityPanel } from "@/components/control-plane/observability-panel";
+import { Sidebar } from "@/components/control-plane/sidebar";
+import { TopBar } from "@/components/control-plane/top-bar";
 import { ThemeProvider } from "@/components/shared/theme-provider";
+import { listProjects } from "@/lib/content";
 
 import "./globals.css";
 
@@ -26,11 +30,16 @@ export const metadata: Metadata = {
     "Operator console for the AI Solutions portfolio. Operate the systems, watch the traces, read the case studies.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Server-side: read the project manifest once and hand it to every panel
+  // that needs to navigate or annotate against it. listProjects is wrapped in
+  // React's cache() so the three consumers below share a single fs walk.
+  const projects = await listProjects();
+
   // className="dark" is set server-side so the very first paint is dark. After
   // hydration, next-themes (inside ThemeProvider) may switch this to "light"
   // if the visitor has explicitly chosen light. suppressHydrationWarning is
@@ -42,7 +51,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} dark`}
     >
       <body className="bg-background text-foreground font-sans antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <div className="flex h-screen flex-col">
+            <TopBar projects={projects} />
+            <div className="grid min-h-0 flex-1 grid-cols-[200px_1fr_220px] overflow-hidden">
+              <Sidebar projects={projects} />
+              <main className="overflow-y-auto bg-background">{children}</main>
+              <ObservabilityPanel projects={projects} />
+            </div>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
