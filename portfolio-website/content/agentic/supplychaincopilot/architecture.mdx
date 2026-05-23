@@ -1,0 +1,51 @@
+## Topology
+
+The system is three Claude-driven agents talking to a shared scratchpad,
+plus a thin orchestrator that decides when "enough" reasoning has
+happened and the decision agent should write the brief. The orchestrator
+is deliberately dumb — a step counter and a confidence threshold — so
+the interesting behavior lives in the agents and their tools rather
+than in routing logic.
+
+{/* interactive diagram to be added in a later slice — for now this is prose. */}
+
+## The tool registry
+
+Each agent gets a scoped tool set. The inventory agent can read but
+not write SAP; the supplier agent can read the supplier master and the
+QA notes vector index; the decision agent has no tools and can only
+read the shared scratchpad. The scoping matters less for safety than
+for evals — narrower toolsets mean shorter traces, which mean cheaper
+debugging when an agent goes off-script.
+
+Tools are defined as Vercel AI SDK `tool({ ... })` entries with Zod
+input schemas. The agents call them via the SDK's tool-use loop with
+`maxSteps: 6`, which has been enough for every flagged PO in the
+evaluation corpus.
+
+## Where pgvector sits
+
+The QA notes index lives in Supabase pgvector. Three years of supplier
+quality notes, chunked per incident report, embedded with
+`text-embedding-3-large`, and queried with cosine similarity. Per
+project, the index is built once at deploy time and refreshed weekly.
+At query time the supplier agent retrieves the top six chunks for a
+given part family, which keeps the prompt under 2,000 tokens of
+retrieval context.
+
+## What gets cached
+
+Three things, three layers:
+
+- **Anthropic prompt cache** on the long system prompt that defines
+  each agent's persona, tools, and output format. The cache TTL gives
+  us roughly 12× the throughput on repeat calls within the same hour.
+- **Supabase materialized view** for the supplier ranking query.
+  Refreshed every fifteen minutes. The supplier agent reads from the
+  view rather than reissuing the join each time.
+- **Edge response cache** on the decision brief itself, keyed on the
+  PO number + a hash of the input state. Repeat requests for the same
+  PO return the same brief without re-running the agents.
+
+The combination keeps the median run under two seconds and the average
+cost per recommendation at about $0.018.

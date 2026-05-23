@@ -1,0 +1,15 @@
+{
+  "slug": "supplychaincopilot",
+  "title": "SupplyChainCopilot",
+  "track": "agentic",
+  "status": "live",
+  "summary": "Multi-agent procurement decisions for mid-market manufacturing.",
+  "capabilities": ["multi-agent", "tool-use", "rag"],
+  "modelsUsed": ["claude", "gpt"],
+  "publishedAt": "2026-03-15",
+  "featured": true,
+  "defaultModel": "claude-opus-4-7",
+  "evalScore": 92,
+  "averageRunCost": { "tokens": 1247, "usd": 0.018 },
+  "relatedProjects": ["ragfoundry"]
+}
