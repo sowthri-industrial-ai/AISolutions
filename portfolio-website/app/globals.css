@@ -7,9 +7,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  /* next/font Geist exposes --font-geist-sans / --font-geist-mono via layout.tsx.
+     Map both to Tailwind's font-sans / font-mono utilities. */
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +41,43 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Track accents — one per AI track. Tailwind v4 auto-generates
+     bg-track-*, text-track-*, border-track-*, ring-track-* utilities. */
+  --color-track-agentic: var(--track-agentic);
+  --color-track-agentic-bg: var(--track-agentic-bg);
+  --color-track-assets: var(--track-assets);
+  --color-track-assets-bg: var(--track-assets-bg);
+  --color-track-physical: var(--track-physical);
+  --color-track-physical-bg: var(--track-physical-bg);
+
+  /* Functional / semantic colors layered on top of shadcn's destructive. */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+
+  /* Type scale — display + h1..h3 supplement Tailwind's default text-sm/xs/base.
+     Each --text-* token can declare its own line-height and letter-spacing. */
+  --text-display: 3rem;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h2: 1.5rem;
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  /* Override defaults so text-sm / text-xs match the locked scale. */
+  --text-sm--line-height: 1.5;
+  --text-xs--line-height: 1.5;
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -81,6 +120,24 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Track accents — light mode. Per spec §A; HSL kept literal so the
+     palette doc and the code agree. The -bg variants are soft tints
+     for card backgrounds and pill fills (low saturation, high lightness). */
+  --track-agentic: hsl(252 60% 56%);
+  --track-agentic-bg: hsl(252 60% 97%);
+  --track-assets: hsl(170 65% 35%);
+  --track-assets-bg: hsl(170 50% 96%);
+  --track-physical: hsl(9 75% 55%);
+  --track-physical-bg: hsl(9 70% 97%);
+
+  /* Functional / semantic colors — light mode. */
+  --success: hsl(142 70% 38%);
+  --success-foreground: hsl(0 0% 100%);
+  --warning: hsl(38 90% 50%);
+  --warning-foreground: hsl(0 0% 10%);
+  --error: hsl(0 75% 50%);
+  --error-foreground: hsl(0 0% 100%);
 }
 
 .dark {
@@ -115,6 +172,23 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Track accents — dark mode. Lighter accent for contrast on the dark
+     background; the -bg tint is a low-lightness, low-saturation chip. */
+  --track-agentic: hsl(252 65% 70%);
+  --track-agentic-bg: hsl(252 30% 14%);
+  --track-assets: hsl(170 60% 50%);
+  --track-assets-bg: hsl(170 25% 12%);
+  --track-physical: hsl(9 70% 65%);
+  --track-physical-bg: hsl(9 30% 14%);
+
+  /* Functional / semantic colors — dark mode. */
+  --success: hsl(142 60% 55%);
+  --success-foreground: hsl(0 0% 5%);
+  --warning: hsl(38 90% 60%);
+  --warning-foreground: hsl(0 0% 5%);
+  --error: hsl(0 75% 60%);
+  --error-foreground: hsl(0 0% 5%);
 }
 
 @layer base {
