@@ -54,7 +54,7 @@ Both surfaces cross-link at the project level. The same MDX content drives both 
 
 ## 3. Stack selection
 
-### Framework: Next.js 15, App Router
+### Framework: Next.js 16, App Router
 
 Server Components, native streaming, file-based routing that maps cleanly to the two-surface architecture (`/control/...` for the app, `/{track}/{slug}` for static pages), excellent Vercel integration. App Router is non-negotiable for this design — Pages Router cannot stream LLM responses with the same fluency, and Server Components are what make the static surface feel fast.
 
@@ -271,8 +271,8 @@ The static page concatenates all six into one long-form scroll with collapsible 
 
 ```typescript
 // types/demo.ts
-
-import type { CoreMessage } from "ai";
+// Note: AI SDK v6 renamed CoreMessage -> ModelMessage. Import ModelMessage from
+// "ai" only where actually needed; the interfaces below do not reference it.
 
 export interface DemoContext {
   model: string;                      // selected from model picker
@@ -363,9 +363,10 @@ import { loadProject } from "@/lib/content";
 export default async function ProjectWorkspace({
   params,
 }: {
-  params: { track: string; slug: string };
+  params: Promise<{ track: string; slug: string }>;
 }) {
-  const project = await loadProject(params.track, params.slug);
+  const { track, slug } = await params;
+  const project = await loadProject(track, slug);
   if (!project) notFound();
   return <Workspace project={project} />;
 }
@@ -386,9 +387,10 @@ export async function generateStaticParams() {
 export default async function StaticProjectPage({
   params,
 }: {
-  params: { track: string; slug: string };
+  params: Promise<{ track: string; slug: string }>;
 }) {
-  const project = await loadProject(params.track, params.slug);
+  const { track, slug } = await params;
+  const project = await loadProject(track, slug);
   if (!project) notFound();
   return <ProjectArticle project={project} />;
 }
@@ -415,12 +417,16 @@ import { loadDemoHandler } from "@/lib/content";
 import { rateLimit } from "@/lib/rate-limit";
 import { logTrace } from "@/lib/observability";
 
-export async function POST(req: Request, { params }: { params: { track: string; slug: string } }) {
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ track: string; slug: string }> },
+) {
+  const { track, slug } = await params;
   const { ok, reason } = await rateLimit(req);
   if (!ok) return new Response(reason, { status: 429 });
 
   const input: DemoInput = await req.json();
-  const handler = await loadDemoHandler(params.track, params.slug);
+  const handler = await loadDemoHandler(track, slug);
 
   const validation = handler.validate(input);
   if (!validation.ok) return new Response(validation.reason, { status: 400 });
@@ -428,7 +434,7 @@ export async function POST(req: Request, { params }: { params: { track: string; 
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const traceId = await logTrace.start({ project: params.slug, input });
+      const traceId = await logTrace.start({ project: slug, input });
       try {
         for await (const step of handler.run(input, ctx)) {
           controller.enqueue(encoder.encode(JSON.stringify(step) + "\n"));
@@ -625,6 +631,15 @@ Three things to handle before scaffolding starts:
    ```
 3. **Decide on package manager.** This doc assumes `pnpm`. If `npm` or `yarn` is preferred, swap commands accordingly — no other implications.
 
+4. **Allow build scripts in `pnpm-workspace.yaml`.** pnpm 10+ refuses to run postinstall scripts for packages it doesn't recognise, which causes `pnpm install` to prompt interactively (broken for CI). Add this to `portfolio-website/pnpm-workspace.yaml` after `create-next-app` runs:
+   ```yaml
+   onlyBuiltDependencies:
+     - sharp
+     - unrs-resolver
+     - esbuild
+     - msw
+   ```
+
 ---
 
 ## 13. Scaffold commands
@@ -636,18 +651,18 @@ pnpm dlx create-next-app@latest . \
   --typescript --tailwind --app \
   --src-dir=false --import-alias="@/*"
 
-pnpm add ai @ai-sdk/anthropic @ai-sdk/openai @ai-sdk/together
+pnpm add ai @ai-sdk/anthropic @ai-sdk/openai @ai-sdk/togetherai
 pnpm add @supabase/supabase-js @supabase/ssr
 pnpm add langfuse
 pnpm add zustand
 pnpm add next-mdx-remote gray-matter
 pnpm add @upstash/redis @upstash/ratelimit
 pnpm add lucide-react clsx tailwind-merge zod
-pnpm add reactflow                       interactive architecture diagrams
+pnpm add @xyflow/react                   interactive architecture diagrams
 
 pnpm add -D @types/node @types/react eslint prettier tsx
 
-pnpm dlx shadcn@latest init
+pnpm dlx shadcn@latest init --defaults
 pnpm dlx shadcn@latest add button card dialog dropdown-menu \
   input select sheet tabs toggle command badge tooltip \
   resizable scroll-area separator skeleton
