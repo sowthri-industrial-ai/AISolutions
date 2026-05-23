@@ -31,7 +31,7 @@ AISolutions/
 ├── README.md · LICENSE · .gitignore · .gitattributes · CLAUDE.md · gitprojectmanual.md
 ├── .github/        workflows/ci-<track>-project-N.yml (per project) · pull_request_template.md
 ├── docs/                     repo-wide documentation
-├── portfoliowebsite/         the portfolio website (stack not yet chosen)
+├── portfolio-website/        the portfolio website (Next.js + MDX; see its TECH-STACK.md)
 ├── agenticai/ · assetsai/ · physicalai/      the three fixed tracks
 │       └── projects/project-N/   self-contained: README · .gitignore · LICENSE
 ```
@@ -53,21 +53,53 @@ Keep this table current. Add a project via `gitprojectmanual.md` §6.
 
 ## Portfolio website
 
-`portfoliowebsite/` is the site that showcases this portfolio — a sibling of the three
-tracks, not a track itself.
+`portfolio-website/` is the visitor-facing showcase — a sibling of the three tracks, not a
+track itself. It *describes and demos* the work that lives in `<track>/projects/project-N/`,
+which are independent codebases.
 
-- **Status:** placeholder — currently only `README.md`; framework/stack not yet chosen.
-- **Workflow:** edits follow the standard branch → PR → squash-merge flow. No dedicated
-  CI workflow yet (per-project CI exists only for track projects).
-- **To record here once decided:** stack/framework, hosting & deploy target, build &
-  preview commands, and how project content feeds the site.
+- **Authoritative spec:** [`portfolio-website/TECH-STACK.md`](portfolio-website/TECH-STACK.md)
+  — folder structure, content schema, routing, AI features, safeguards, deployment.
+- **Stack (locked):** Next.js 15 (App Router) · Tailwind v4 + shadcn/ui · MDX via
+  `next-mdx-remote` · Supabase + pgvector · Vercel AI SDK (Anthropic, OpenAI, Together) ·
+  Langfuse for LLM observability · Upstash Redis for rate limiting · Vercel hosting,
+  deployed from the `portfolio-website/` subfolder.
+- **Architecture in one line:** two surfaces — a control plane at `/control` (interactive
+  workspaces with live demos) and static case study pages at `/{track}/{slug}` — both
+  rendered from a single source at `portfolio-website/content/{track}/{slug}/`. Adding a
+  project is dropping a folder there.
+- **AI features (three layers):** global AI guide (chat across the site) · per-project
+  copilot (RAG over each project's MDX) · live workspace demos (real model calls,
+  streamed). Plus a top-bar model picker, compare mode, and an observability panel.
+- **Relationship to root tracks:** the portfolio's `content/` describes work whose
+  codebase lives at `<track>/projects/project-N/`. Cross-links go both ways. The portfolio
+  does not import code from those folders — they are independent concerns.
+- **Status:** architecture locked, spec committed, scaffold pending.
 
-> _Placeholder — the portfolio-website workstream owns this section and will expand it._
+### Working boundary
+
+- **Owned by this workstream:** everything inside `portfolio-website/`.
+- **Not touched by this workstream:** root tracks (`agenticai/`, `assetsai/`, `physicalai/`),
+  their CI workflows, the root-level docs (`README.md`, `gitprojectmanual.md`, sections of
+  this file outside the Portfolio website section).
+- **Branching:** standard branch → PR → squash-merge. Feature branches use the prefix
+  `portfolio-<short-desc>`.
+- **CI:** none yet — the per-project CI pattern in the root tracks does not apply here.
+  A dedicated workflow (lint + typecheck + build + Vercel preview) will be added once the
+  Next.js scaffold lands.
+
+### What future Claude sessions should do here
+
+- Read `portfolio-website/TECH-STACK.md` first. All implementation decisions defer to that
+  document unless explicitly amended in this section.
+- Never modify root track folders or their CI workflows as part of portfolio-website work.
+- Adding a project to the portfolio = drop a folder under
+  `portfolio-website/content/{track}/{slug}/` per Section 5 of the spec. Do not create
+  the project's underlying codebase from here — that's a separate workstream.
 
 ## Conventions
 
 - Folder and branch names: lowercase, hyphenated. Feature branches: `<track>-project-<N>-<desc>`.
-- `portfoliowebsite/` stack is not yet decided.
+- `portfolio-website/` stack: Next.js 15 (App Router) + Tailwind + shadcn/ui + MDX. Authoritative spec lives in `portfolio-website/TECH-STACK.md`.
 
 ## Claude Code tooling
 
@@ -95,6 +127,8 @@ Revisit a frontend/design plugin only once `portfoliowebsite/` development begin
 - **2026-05-23** — `gitprojectmanual.md` Git/GitHub runbook added.
 - **2026-05-23** — `CLAUDE.md` created as the repo's working memory.
 - **2026-05-23** — Branch protection on `main`; PR template + `.gitattributes` added; plugin/tooling guidance corrected to match how Claude Code actually works.
+- **2026-05-23** — `portfolio-website/` architecture authored; TECH-STACK.md spec drafted.
+- **2026-05-23** — Folder renamed `portfoliowebsite` → `portfolio-website` (hyphen per spec).
 
 Authoritative history is `git log` + merged PRs — keep this list to high-level milestones only.
 
