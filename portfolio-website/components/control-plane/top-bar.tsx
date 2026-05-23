@@ -15,7 +15,6 @@
 import { ChevronDown, Moon, Search, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import type { ProjectMetadata } from "@/types/project";
@@ -123,17 +122,13 @@ function IconButton({
 }
 
 function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
-  // next-themes resolves the theme client-side; render the icon only after
-  // mount so SSR + first hydration don't disagree about which one to show.
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const current = mounted ? (resolvedTheme ?? theme ?? "dark") : "dark";
-  const isDark = current === "dark";
+  // On the server resolvedTheme is undefined; we render the dark-mode icon
+  // (Sun, meaning "switch to light") to match defaultTheme="dark" in the
+  // provider. On the client next-themes will re-render with the real value
+  // once its effect runs — that's a re-render, not a hydration mismatch.
+  const isDark = resolvedTheme !== "light";
 
   return (
     <button
@@ -144,6 +139,7 @@ function ThemeToggle() {
         "bg-background text-foreground-muted hover:bg-background-hover hover:text-foreground",
       )}
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      suppressHydrationWarning
     >
       {isDark ? (
         <Sun className="size-3.5" />
