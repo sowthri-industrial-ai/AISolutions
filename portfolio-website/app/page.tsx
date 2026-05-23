@@ -1,17 +1,17 @@
-// app/page.tsx
-// Home — placeholder. Will surface both routes equally: a hero, the
-// featured projects from content/*/project.json, and entry points to the
-// control plane (/control) and the static tracks (/agentic, /assets,
-// /physical). See TECH-STACK.md §6 and §14.
+// Welcome state for the control plane.
+//
+// The shell (top bar, sidebar, obs panel) already lives in app/layout.tsx —
+// this route just fills the centre column with a hint when no project is
+// selected. Deliberately spartan: the sidebar is the entry point, the
+// landing surface should not compete with it.
 
-export default function HomePage() {
+export default function ControlPlaneWelcomePage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-3xl font-medium">AISolutions — portfolio</h1>
-      <p className="text-muted-foreground mt-4">
-        Home placeholder. The final page surfaces the control plane and the
-        static case-study tracks side by side.
-      </p>
-    </main>
+    <div className="flex h-full items-center justify-center px-6 text-base text-foreground-muted">
+      <span className="select-none">
+        <span className="mr-1 text-foreground-subtle">←</span>
+        Pick a project from the sidebar.
+      </span>
+    </div>
   );
 }
