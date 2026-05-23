@@ -1,0 +1,47 @@
+## The problem
+
+Three mid-market manufacturers were each absorbing about two weeks of
+supplier delay per critical part, every quarter. The pattern was always
+the same: a tier-2 supplier slipped, the buyer found out late, and the
+line was already shorting components by the time procurement had a
+substitute lined up. Stockouts were recurring rather than exceptional.
+
+## Constraints
+
+The ERP was non-negotiable. Two of the three customers had finished
+migrations to it within the last eighteen months and were not going to
+replace anything sitting under it — not the master data, not the PO
+workflow, and not the audit trail that compliance had signed off on.
+The other hard constraint was traceability: every recommendation the
+system made had to be defensible after the fact, with the inputs
+referenced and the model output preserved. "Because the AI said so"
+was not an acceptable answer for a $400k order.
+
+## Who used it
+
+Procurement managers — three of them across the three customers, with
+buyers picking up the routine cases. The managers reviewed only the
+flagged decisions where the system either had low confidence or where
+the recommended action exceeded a spend threshold. Everything else
+went through straight from the buyer queue.
+
+## What the system does
+
+Three specialist agents share a shared scratchpad and negotiate a
+single recommendation per flagged purchase order:
+
+- The **inventory agent** reads stock levels, open POs, and the demand
+  forecast for the affected part family. Its job is to surface "do we
+  actually need a replacement, and by when".
+- The **supplier agent** ranks alternates against the original supplier
+  on lead time, qualified-supplier status, price delta, and recent
+  on-time performance. It pulls from the SQL supplier master plus a
+  vector index of three years of QA notes.
+- The **decision agent** synthesizes both, writes a recommendation in
+  the procurement manager's voice, and attaches the evidence chain.
+
+The output is a one-screen brief: recommended action, projected impact,
+the alternatives that were considered and rejected, and a link back to
+every source the recommendation depended on. The procurement manager
+either approves, edits, or rejects — and the system learns from the
+rejection reason rather than the rejection itself.

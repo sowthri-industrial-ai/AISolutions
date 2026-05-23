@@ -1,0 +1,48 @@
+## What was chosen
+
+**Three agents, not one.** A single-agent prompt with all the tools
+performed about as well on the easy cases and noticeably worse on the
+hard ones, where the model conflated "rank suppliers" with "decide
+the order." Splitting roles forced cleaner intermediate outputs and
+made evals tractable — each agent has its own golden set.
+
+**Anthropic for the decision brief, OpenAI for the supplier ranking.**
+Claude wrote noticeably better procurement-manager prose, but the
+ranking agent's job is structured scoring under a rubric, and GPT-4o
+held the rubric weights more reliably across runs. Two model families
+in the same pipeline is operational cost we accept for output quality.
+
+**A dumb orchestrator.** The orchestrator counts steps and watches a
+confidence score. Earlier iterations had the orchestrator itself doing
+LLM-based "should we continue?" calls; the latency and the cost both
+went up without measurable accuracy gains.
+
+## What was rejected
+
+**Fine-tuning a custom decision model.** The training data was thin
+(240 examples) and the cost would have been hard to amortize across
+three customers with different prose styles. Prompting with the
+manager's voice modeled into the system prompt has been good enough.
+
+**Replacing the ERP integration with a screen-scraper.** Tempting,
+because the official ERP API is rate-limited and slow, but the
+maintenance burden and the audit story both collapse the moment a
+screen scrape misses a field.
+
+**Letting the agents call each other directly.** Tried, regretted.
+Direct agent-to-agent calls made debugging miserable — there was no
+shared trace to read after the fact. The shared scratchpad pattern
+is slower per token but gave us a single observable timeline.
+
+## What would change in v2
+
+The biggest gap right now is reactivity. The system only sees flagged
+POs at the moment the buyer escalates them. A useful v2 would
+subscribe to supplier-master changes and proactively surface the
+recommendations the buyer is about to need — flipping the system from
+reactive to predictive. The agent shape stays the same; the entry
+point moves up the funnel.
+
+The second gap is multilingual evidence. Two of the QA note corpora
+are in German and the current embeddings are English-only. v2 should
+move to a multilingual embedding model and re-index.
