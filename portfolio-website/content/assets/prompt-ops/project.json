@@ -1,0 +1,11 @@
+{
+  "slug": "prompt-ops",
+  "title": "PromptOps",
+  "track": "assets",
+  "status": "live",
+  "summary": "Versioned prompts with offline evals and gated rollout.",
+  "capabilities": ["eval", "prompt-engineering"],
+  "modelsUsed": ["claude", "gpt"],
+  "publishedAt": "2026-01-22",
+  "defaultModel": "claude-sonnet-4-6"
+}

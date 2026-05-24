@@ -1,0 +1,11 @@
+{
+  "slug": "rag-foundry",
+  "title": "RAGFoundry",
+  "track": "assets",
+  "status": "live",
+  "summary": "Hybrid retrieval over enterprise corpora with grounded answers.",
+  "capabilities": ["rag", "vector-search"],
+  "modelsUsed": ["claude"],
+  "publishedAt": "2026-02-08",
+  "defaultModel": "claude-opus-4-7"
+}

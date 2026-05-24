@@ -1,0 +1,11 @@
+{
+  "slug": "robo-instruct",
+  "title": "RoboInstruct",
+  "track": "physical",
+  "status": "concept",
+  "summary": "Natural-language teach pendant for collaborative arms.",
+  "capabilities": ["multi-agent", "tool-use"],
+  "modelsUsed": ["claude"],
+  "publishedAt": "2026-04-28",
+  "defaultModel": "claude-opus-4-7"
+}

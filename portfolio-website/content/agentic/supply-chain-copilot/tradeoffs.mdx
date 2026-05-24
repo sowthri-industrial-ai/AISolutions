@@ -1,0 +1,38 @@
+---
+title: Trade-offs
+order: 6
+---
+
+## What we chose, and what it cost
+
+Every architectural decision has a counter-position. The notes below
+are the ones I expect to be challenged in review.
+
+### pgvector over a managed vector DB
+
+Postgres-native retrieval keeps contracts, vectors, and audit log in
+one transactional store. We give up best-in-class recall@k on very
+large corpora — we never expect >5M chunks per tenant — and gain a
+single backup/restore story for compliance.
+
+### Two agents, not one
+
+A planner+critic split costs ~280ms and ~30% more tokens than a
+single-shot prompt. It bought a 6× drop in hallucinated SKUs and made
+the system reviewable by the buyer team. Worth the spend at this
+dollar-volume.
+
+### Human-in-the-loop, always
+
+Auto-approve was scoped out for v1. The agent is allowed to surface a
+recommendation, never to commit a purchase order. Reduces blast
+radius to zero at the cost of full automation.
+
+### What I'd revisit
+
+- Caching: lead-time queries repeat heavily — a 60s TTL would shave
+  ~22% of tool calls.
+- Eval surface: 240 scenarios is too narrow; needs a synthetic
+  generator.
+- Critic latency: a 7B distilled critic would likely match Opus at
+  1/4 the time.
