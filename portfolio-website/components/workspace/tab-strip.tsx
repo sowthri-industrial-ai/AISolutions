@@ -10,17 +10,31 @@
 // as anchors so the URL space stays explorable.
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import { TABS, type TabDef } from "@/lib/projects";
 
 interface TabStripProps {
   projectBase: string; // e.g. "/control/agentic/supply-chain-copilot"
-  active: string;      // active tab slug, e.g. "architecture"
+  /**
+   * SSR fallback for the active tab. The component derives the true
+   * active tab on the client from usePathname() — necessary because
+   * App Router layouts don't receive their descendant route's params,
+   * so the SSR `active` from the parent layout is a best-guess.
+   */
+  active: string;
   disabled?: boolean;
 }
 
 export function TabStrip({ projectBase, active, disabled = false }: TabStripProps) {
   const tabs = useMemo(() => TABS, []);
+  // Read the deepest URL segment under projectBase. This is the real
+  // active tab and trumps the SSR fallback prop on the client.
+  const pathname = usePathname();
+  const trail = pathname?.startsWith(projectBase + "/")
+    ? pathname.slice(projectBase.length + 1).split("/")[0]
+    : null;
+  const activeTab = trail || active;
   return (
     <div
       role="tablist"
@@ -39,7 +53,7 @@ export function TabStrip({ projectBase, active, disabled = false }: TabStripProp
           key={tab.slug}
           tab={tab}
           href={`${projectBase}/${tab.slug}`}
-          active={tab.slug === active}
+          active={tab.slug === activeTab}
           disabled={disabled}
         />
       ))}

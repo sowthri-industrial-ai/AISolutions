@@ -212,7 +212,7 @@ function GraphView({ reaction, track, onNodeClick }: GraphViewProps) {
             markerHeight="7"
             orient="auto-start-reverse"
           >
-            <path d="M0,0 L10,5 L0,10 Z" fill={track.color} />
+            <path d="M0,0 L10,5 L0,10 Z" style={{ fill: track.color }} />
           </marker>
         </defs>
 
@@ -263,11 +263,13 @@ function GraphView({ reaction, track, onNodeClick }: GraphViewProps) {
               key={i}
               d={d}
               fill="none"
-              stroke={isHover ? track.color : "var(--fg-subtle)"}
               strokeWidth={isHover ? 1.25 : 1}
               opacity={hover && !isHover ? 0.22 : 0.9}
               markerEnd={isHover ? "url(#arrow-active)" : "url(#arrow-default)"}
-              style={{ transition: "stroke .14s, opacity .14s" }}
+              style={{
+                stroke: isHover ? track.color : "var(--fg-subtle)",
+                transition: "stroke .14s, opacity .14s",
+              }}
             />
           );
         })}
@@ -296,9 +298,9 @@ function GraphView({ reaction, track, onNodeClick }: GraphViewProps) {
                   height={NODE_H + 6}
                   rx={7}
                   fill="none"
-                  stroke={track.color}
                   strokeWidth={2}
                   opacity={0.5}
+                  style={{ stroke: track.color }}
                 />
               )}
               <rect
@@ -307,9 +309,14 @@ function GraphView({ reaction, track, onNodeClick }: GraphViewProps) {
                 width={NODE_W}
                 height={NODE_H}
                 rx={5}
-                fill={`color-mix(in srgb, ${track.color} ${isPrimary ? 22 : 15}%, var(--bg-elevated))`}
-                stroke={`color-mix(in srgb, ${track.color} ${isPrimary ? 70 : 50}%, transparent)`}
                 strokeWidth={isPrimary ? 1 : 0.5}
+                style={{
+                  // SVG `fill`/`stroke` ATTRIBUTES can't parse modern CSS
+                  // color functions like color-mix(); they fall back to
+                  // black. CSS properties (via `style`) do parse them.
+                  fill: `color-mix(in srgb, ${track.color} ${isPrimary ? 22 : 15}%, var(--bg-elevated))`,
+                  stroke: `color-mix(in srgb, ${track.color} ${isPrimary ? 70 : 50}%, transparent)`,
+                }}
               />
               <text
                 x={NODE_W / 2}
