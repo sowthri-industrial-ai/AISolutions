@@ -1,0 +1,73 @@
+name: "CI · portfolio-website"
+
+# Path-filtered: runs only when the portfolio-website tree or this workflow
+# itself changes. PRs and pushes-to-main both gated through the same checks.
+# Including the workflow file in the path filter means edits to this file
+# get tested on the same PR that introduces them — the path filter triggers
+# the workflow against the PR head, which is standard GitHub Actions behaviour.
+on:
+  pull_request:
+    paths:
+      - 'portfolio-website/**'
+      - '.github/workflows/ci-portfolio-website.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'portfolio-website/**'
+      - '.github/workflows/ci-portfolio-website.yml'
+
+# Per-PR concurrency group: rapid pushes to the same ref supersede each
+# other; main and other branches' workflows run in parallel without
+# crowding the runners.
+concurrency:
+  group: ci-portfolio-website-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege token. This workflow only reads source — no PR comments,
+# no deploys, no release writes — so contents:read is sufficient. Do NOT
+# add pull-requests:write unless a step starts commenting on PRs.
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    # Every command runs in portfolio-website/ — set once at the job level
+    # instead of on each step. Keeps the steps clean and matches Vercel's
+    # eventual Root Directory configuration.
+    defaults:
+      run:
+        working-directory: portfolio-website
+
+    steps:
+      # SHA-pinned per the slice-4 brief — the trailing `# vX.Y.Z` comment
+      # lets humans read the version at a glance and Dependabot manage upgrades.
+      # See PR body's SHA citation table for lookup sources.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4.3.1
+
+      # pnpm BEFORE setup-node so setup-node's `cache: 'pnpm'` finds the
+      # pnpm binary on PATH. Explicit version matches package.json#packageManager.
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320  # v4.4.0
+        with:
+          version: 11.2.2
+          run_install: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4.4.0
+        with:
+          node-version-file: 'portfolio-website/.nvmrc'
+          cache: 'pnpm'
+          cache-dependency-path: 'portfolio-website/pnpm-lock.yaml'
+
+      # pnpm for INSTALL — `npm install` chokes on pnpm's .pnpm/ node_modules
+      # layout. --frozen-lockfile fails the build if pnpm-lock.yaml is missing
+      # or out-of-sync, catching drift between local and CI.
+      - run: pnpm install --frozen-lockfile
+
+      # npm for SCRIPTS — they all live under package.json#scripts and run
+      # uniformly under either package manager. Using npm here keeps the
+      # commands identical to the README's "Local development" section.
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
