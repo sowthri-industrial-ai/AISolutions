@@ -76,7 +76,15 @@ export function AgentReactionTab({ project }: AgentReactionTabProps) {
   };
 
   return (
-    <div ref={scrollRootRef} className="fade-up">
+    <div
+      ref={scrollRootRef}
+      className="fade-up"
+      // -20px overshoots the workspace content div's 20px top padding so
+      // the sticky AnchorNav lands flush against the tab strip instead of
+      // floating 20px below it. The intro paragraph and section dividers
+      // below the nav still have plenty of breathing room.
+      style={{ marginTop: -20 }}
+    >
       <AnchorNav scrollRoot={scrollRoot} />
 
       <p
