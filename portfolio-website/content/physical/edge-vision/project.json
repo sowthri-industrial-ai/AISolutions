@@ -1,0 +1,11 @@
+{
+  "slug": "edge-vision",
+  "title": "EdgeVision",
+  "track": "physical",
+  "status": "in-dev",
+  "summary": "On-device perception for industrial inspection.",
+  "capabilities": ["edge-inference"],
+  "modelsUsed": ["custom"],
+  "publishedAt": "2026-05-01",
+  "defaultModel": "custom-vision-3b"
+}

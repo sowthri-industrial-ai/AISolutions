@@ -1,0 +1,23 @@
+---
+title: Results
+order: 5
+---
+
+## Offline evals
+
+Run against a 240-scenario benchmark drawn from Q1–Q2 buyer tickets.
+Held-out set; no overlap with prompt-tuning examples.
+
+| Metric                       | Baseline | v1.4.2 | Δ        |
+| ---------------------------- | -------: | -----: | -------: |
+| Recommendation accuracy      |    71.4% |  92.1% |   +20.7  |
+| Hallucinated SKU rate        |    14.0% |   2.3% |   −11.7  |
+| p50 latency                  |    820ms |   1.20s |  +0.38s  |
+| Cost / decision              |   $0.011 | $0.018 |  +$0.007 |
+| Time-to-decision (operator)  |   4h 12m |    11m |  −4h 01m |
+
+## Production, 24h window
+
+- 1,840 decisions surfaced; 1,692 approved as-is
+- 7.3% revised by buyer; 0.6% rejected outright
+- Zero PO mis-issues attributable to the agent

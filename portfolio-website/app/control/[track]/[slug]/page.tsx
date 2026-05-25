@@ -1,23 +1,16 @@
-// app/control/[track]/[slug]/page.tsx
-// Project workspace — placeholder.
-// TECH-STACK.md §6: tabbed view (Overview / Architecture / Prompts / Results
-// / Trade-offs / Demo) rendered from content/{track}/{slug}/*.mdx + demo.ts.
+// /control/[track]/[slug] — redirects to the default tab so every project
+// URL lands somewhere meaningful. Server-side redirect — no flash.
 
-export default async function ProjectWorkspacePage({
+import { redirect, notFound } from "next/navigation";
+import { DEFAULT_TAB, projectByTrackAndSlug } from "@/lib/projects";
+
+export default async function ProjectIndexPage({
   params,
 }: {
   params: Promise<{ track: string; slug: string }>;
 }) {
   const { track, slug } = await params;
-  return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-2xl font-medium">
-        Workspace · {track} / {slug}
-      </h1>
-      <p className="mt-4 text-muted-foreground">
-        Project workspace placeholder. Final page mounts the six-tab
-        workspace with the live demo runner.
-      </p>
-    </main>
-  );
+  const project = projectByTrackAndSlug(track, slug);
+  if (!project) notFound();
+  redirect(`/control/${track}/${slug}/${DEFAULT_TAB}`);
 }

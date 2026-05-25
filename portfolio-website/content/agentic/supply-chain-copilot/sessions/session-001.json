@@ -1,0 +1,26 @@
+{
+  "id": "session-001",
+  "projectSlug": "supply-chain-copilot",
+  "capturedAt": "2026-03-14T17:21:00Z",
+  "input": {
+    "prompt": "SKU-4421-B lead time slipping to 14d; cover is 14 days. What do we do?",
+    "sampleId": "sku-shortage"
+  },
+  "steps": [
+    { "agent": "Procurement Planner", "tool": "decision.plan",      "content": "Fan out to information agents." },
+    { "agent": "Inventory Analyst",   "tool": "inventory.lookup",   "content": "Burn rate: 0.6 units/hr; cover 14 days." },
+    { "agent": "Supplier Researcher", "tool": "alternates.fetch",   "content": "Supplier B available, +12% unit cost." },
+    { "agent": "Lead-time Forecaster","tool": "leadtime.forecast",  "content": "Supplier B forecast 5 days at 92% confidence." },
+    { "agent": "Procurement Planner", "tool": "decision.synthesize","content": "Draft: split order 60/40 between current and Supplier B." },
+    { "agent": "Decision Critic",     "tool": "critic.review",      "content": "Verdict: ship with caveat — flag for buyer review." },
+    { "agent": "Order Approver",      "tool": "approval.gate",      "content": "Approval required from buyer." }
+  ],
+  "metrics": {
+    "tokens": 1247,
+    "latencyMs": 1200,
+    "usd": 0.018,
+    "evalScore": 92
+  },
+  "model": "claude-opus-4-7",
+  "notes": "Canonical run used in the Agent Reaction tab's sequence view."
+}

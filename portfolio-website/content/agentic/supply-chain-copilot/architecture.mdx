@@ -1,0 +1,28 @@
+---
+title: Architecture
+order: 2
+---
+
+## System shape
+
+The system runs as a six-layer stack with cross-cutting rails for
+observability and security. Live inventory, supplier contracts, and
+historical lead-time records feed a knowledge layer of pgvector
+indices and SQL tables. A foundation LLM and a custom forecaster sit
+above that, orchestrated by a six-agent system whose canonical run is
+documented in the Agent Reaction tab. The application layer serves a
+buyer chat and an approver dashboard. Tracing, evaluation, secrets,
+and audit logging span every layer; the whole stack runs on
+Vercel + Supabase + Upstash.
+
+> The interactive six-layer diagram, rails, and plinth render from
+> `lib/architecture-data.ts` — this MDX exists so the static surface
+> (and future authoring tools) have prose alongside the structure.
+
+## Why this shape
+
+A single-pass agent over-committed to the first supplier match.
+Splitting plan from critique cut wrong-supplier recommendations from
+14% to 2.3% in evals, at +280ms latency. Pulling embeddings and SQL
+behind the same Knowledge layer kept retrieval transactional with the
+audit log — a hard requirement from compliance.

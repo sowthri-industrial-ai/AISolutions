@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -18,11 +18,6 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -43,12 +38,19 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* --------------------------------------------------------------------
+   :root — LIGHT mode tokens (active when <html> does NOT have .dark)
+     - shadcn defaults (used by unused components/ui/ primitives)
+     - CD design tokens (--bg, --fg, --agentic, etc.) for the control plane
+   The CD tokens are augmenting the same :root block so Tailwind v4 /
+   Turbopack don't strip them — splitting into a separate :root block
+   with an attribute selector caused the entire block + everything after
+   it to be dropped from the compiled CSS.
+   -------------------------------------------------------------------- */
 :root {
+  /* shadcn defaults (unchanged) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -67,11 +69,6 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -81,9 +78,40 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* === CD design tokens — LIGHT mode === */
+  --bg: #FAFAF8;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F4F4F2;
+  --bg-hover: #EDEDEA;
+  --fg: #1A1A1A;
+  --fg-muted: #6B6B68;
+  --fg-subtle: #9A9A96;
+  --border-token: #E8E8E5;
+  --border-strong: #D5D5D2;
+  --agentic: hsl(252 50% 50%);
+  --agentic-bg: hsl(252 70% 96%);
+  --agentic-fg: hsl(252 55% 42%);
+  --assets: hsl(170 60% 35%);
+  --assets-bg: hsl(170 50% 95%);
+  --assets-fg: hsl(170 65% 28%);
+  --physical: hsl(9 70% 50%);
+  --physical-bg: hsl(9 75% 96%);
+  --physical-fg: hsl(9 70% 42%);
+  --success: hsl(142 60% 35%);
+  --success-bg: hsl(142 55% 92%);
+  --info: hsl(220 70% 45%);
+  --warning: hsl(38 80% 60%);
+  --error: hsl(0 70% 60%);
 }
 
+/* --------------------------------------------------------------------
+   .dark — DARK mode token overrides (active when <html class="dark">)
+   Set on <html> by the pre-paint script in app/layout.tsx and kept in
+   sync by lib/store.ts.
+   -------------------------------------------------------------------- */
 .dark {
+  /* shadcn defaults (unchanged) */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -102,11 +130,6 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -115,16 +138,192 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* === CD design tokens — DARK mode === */
+  --bg: #0A0A0A;
+  --bg-elevated: #141414;
+  --bg-subtle: #1A1A1A;
+  --bg-hover: #1F1F1F;
+  --fg: #E5E5E5;
+  --fg-muted: #8A8A8A;
+  --fg-subtle: #5C5C5C;
+  --border-token: #262626;
+  --border-strong: #3A3A3A;
+  --agentic: hsl(252 65% 70%);
+  --agentic-bg: hsl(252 40% 20%);
+  --agentic-fg: hsl(252 75% 82%);
+  --assets: hsl(170 55% 50%);
+  --assets-bg: hsl(170 35% 18%);
+  --assets-fg: hsl(170 65% 65%);
+  --physical: hsl(9 70% 65%);
+  --physical-bg: hsl(9 40% 20%);
+  --physical-fg: hsl(9 80% 75%);
+  --success: hsl(142 50% 55%);
+  --success-bg: hsl(142 40% 18%);
+  --info: hsl(220 60% 65%);
+  --warning: hsl(38 80% 60%);
+  --error: hsl(0 70% 60%);
 }
 
+/* --------------------------------------------------------------------
+   Base layer — body styles, prose, scrollbars, focus rings, animations
+   -------------------------------------------------------------------- */
+
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  /* Body styles — Tailwind utility @apply for shadcn-compat bg/fg first,
+     then the control-plane specific font + smoothing rules. */
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
   }
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  ::selection { background: var(--agentic-bg); color: var(--fg); }
+
+  /* Scrollbars — thin, app-grade */
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb {
+    background: var(--border-token);
+    border-radius: 4px;
+  }
+  *::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+  *::-webkit-scrollbar-track { background: transparent; }
+
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  input, textarea { font: inherit; color: inherit; }
+  a { color: var(--info); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  code, pre, .mono {
+    font-family: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  /* Focus rings */
+  :focus-visible { outline: 1.5px solid var(--info); outline-offset: 1px; border-radius: 3px; }
 }
+
+/* --------------------------------------------------------------------
+   .prose — tab content typography (CD bundle parity)
+   Outside @layer base so component-scoped styles win on cascade order.
+   -------------------------------------------------------------------- */
+
+.prose h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+.prose h2:first-child { margin-top: 0; }
+.prose h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 20px 0 6px;
+  color: var(--fg);
+}
+.prose p {
+  margin: 0 0 10px;
+  color: var(--fg);
+  max-width: 64ch;
+}
+.prose p.muted { color: var(--fg-muted); }
+.prose ul, .prose ol {
+  margin: 0 0 12px;
+  padding-left: 18px;
+}
+.prose li {
+  margin: 4px 0;
+  color: var(--fg);
+}
+.prose li::marker { color: var(--fg-subtle); }
+.prose code {
+  font-size: 12px;
+  background: var(--bg-subtle);
+  border: 0.5px solid var(--border-token);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--fg);
+}
+.prose pre {
+  font-size: 12px;
+  background: var(--bg-subtle);
+  border: 0.5px solid var(--border-token);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin: 10px 0 14px;
+  overflow: auto;
+  line-height: 1.55;
+}
+.prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 12px;
+}
+.prose table {
+  border-collapse: collapse;
+  margin: 8px 0 14px;
+  font-size: 12px;
+  width: 100%;
+  max-width: 560px;
+}
+.prose th, .prose td {
+  text-align: left;
+  padding: 7px 12px;
+  border-bottom: 0.5px solid var(--border-token);
+}
+.prose th {
+  font-weight: 500;
+  color: var(--fg-muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 0.5px solid var(--border-strong);
+}
+.prose td.num { font-family: var(--font-geist-mono); text-align: right; }
+.prose th.num { text-align: right; }
+.prose .callout {
+  border: 0.5px solid var(--border-token);
+  background: var(--bg-subtle);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  font-size: 12.5px;
+  color: var(--fg-muted);
+}
+.prose .kbd {
+  font-family: var(--font-geist-mono);
+  font-size: 11px;
+  border: 0.5px solid var(--border-strong);
+  background: var(--bg-subtle);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Pseudo-syntax token colors for inline-highlighted prompt blocks */
+.tok-k { color: var(--agentic); }
+.tok-s { color: var(--success); }
+.tok-c { color: var(--fg-subtle); font-style: italic; }
+.tok-n { color: var(--info); }
+.tok-fn { color: var(--assets-fg); }
+
+/* Workspace transition entrance */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: none; }
+}
+.fade-up { animation: fade-up .18s ease-out both; }

@@ -1,14 +1,14 @@
-// app/control/layout.tsx
-// Control plane shell — placeholder.
-// TECH-STACK.md §6 specifies the final shape: TopBar at the top, then a
-// three-column grid of Sidebar (180px) · main (1fr) · ObservabilityPanel
-// (200px). For the scaffold, render children only so the route tree is
-// in place.
+// /control/* layout — mounts the persistent 3-column shell once and
+// streams the per-route page into the workspace slot. The shell itself
+// is a client component (ControlPlaneShell) so it can read URL segments
+// to derive the active project for the breadcrumb + sidebar highlight.
 
-export default function ControlPlaneLayout({
+import { ControlPlaneShell } from "@/components/control-plane/shell";
+
+export default function ControlLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <ControlPlaneShell>{children}</ControlPlaneShell>;
 }
