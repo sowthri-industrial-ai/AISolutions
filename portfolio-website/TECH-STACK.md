@@ -118,7 +118,7 @@ portfolio-website/
 ├── components.json                   shadcn config
 ├── .env.example
 ├── .env.local                        gitignored
-├── .nvmrc                            Node 20
+├── .nvmrc                            Node 22 (pnpm 11 requires ≥22.13)
 │
 ├── content/                          THE source of truth
 │   ├── agentic/
@@ -712,9 +712,9 @@ Three things to handle before scaffolding starts:
    ```bash
    git mv "1.PortfolioWebsite" "portfolio-website"
    ```
-2. **Add `.nvmrc`.** Pin Node 20 to avoid drift between local and Vercel:
+2. **Add `.nvmrc`.** Pin Node 22 to avoid drift between local and Vercel. Node 22 is the floor for `pnpm@11.2.2` (pinned in `package.json#packageManager`) because pnpm 11 uses the `node:sqlite` built-in added in Node 22.5:
    ```bash
-   echo "20" > portfolio-website/.nvmrc
+   echo "22" > portfolio-website/.nvmrc
    ```
 3. **Decide on package manager.** This doc assumes `pnpm`. If `npm` or `yarn` is preferred, swap commands accordingly — no other implications.
 

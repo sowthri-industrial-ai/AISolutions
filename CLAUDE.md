@@ -132,6 +132,7 @@ Revisit a frontend/design plugin only once `portfoliowebsite/` development begin
 - **2026-05-23** — `portfolio-website/` Next.js scaffold landed (PR #1 → `19b147b`): Next 16.2.6 + Tailwind v4 + shadcn/ui + MDX + Supabase + Vercel AI SDK; pnpm-managed.
 - **2026-05-25** — Slice 3 design implementation merged (PR #4 → `a4ef03a`): control-plane shell + Architecture tab + Agent Reaction tab at full fidelity; 5 skeleton tabs; routing `/control/[track]/[slug]/[tab]`; 23 vitest tests.
 - **2026-05-25** — TECH-STACK.md §6 reconciled (`faa658d`) to record the implemented `/control/[track]/[slug]/[tab]` route shape, ControlPlaneShell client wrapper, and the [slug]→/overview redirect.
+- **2026-05-25** — Slice 4 CI workflow + Vercel deploy README merged (PR #5 → `fd67363`): path-filtered `.github/workflows/ci-portfolio-website.yml` (SHA-pinned actions, `contents: read` only, per-PR concurrency); pnpm-install + npm-scripts pattern documented in README; `.nvmrc` bumped 20→22 after CI caught that `pnpm@11.2.2` requires Node ≥22.13.
 
 Authoritative history is `git log` + merged PRs — keep this list to high-level milestones only.
 
