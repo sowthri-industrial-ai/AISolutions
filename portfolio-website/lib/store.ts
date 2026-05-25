@@ -71,6 +71,13 @@ export const useControlPlaneStore = create<ControlPlaneState>()(
       setExpanded: (expanded) => set({ expanded }),
     }),
     {
+      // IMPORTANT — slot shape is shared with the pre-paint <Script> in
+      // app/layout.tsx, which reads localStorage["ctrl-plane:v1"].theme
+      // to stamp data-theme + .dark on <html> before React hydrates.
+      // Do NOT split this into multiple localStorage keys for "cleanliness";
+      // doing so reintroduces the FOUC flash this slot was designed to
+      // prevent. If you add new persisted slots, add them inside this
+      // same key under partialize() — never as a sibling key.
       name: "ctrl-plane:v1",
       // Use sessionStorage on the server (where it's a no-op) and localStorage
       // in the browser; the persist key matches the pre-paint script's slot.

@@ -3,6 +3,21 @@
 // Top bar: brand · breadcrumb · model chip · temp chip · search · theme toggle.
 // 44px tall, elevated surface, single 0.5px bottom border. Matches the CD
 // bundle's <TopBar> in src/chrome.jsx.
+//
+// NOTE — chrome components in this folder use inline `style={{}}` with
+// `var(--token)` references throughout (e.g. background: 'var(--bg-elevated)').
+// This is intentional. The CD bundle drives all surface and accent colors
+// off CSS variables that flip on `.dark`-class toggle, so inline `var()`
+// gives us a 1:1 mapping of the source design with zero abstraction layer
+// and zero broken styles when the theme switches.
+//
+// Resist the urge to "modernize" these into Tailwind utility classes like
+// `bg-[var(--bg-elevated)]` or a custom `bg-cd-elevated` mapped through
+// @theme inline. The arbitrary-value approach loses the var() chain on
+// theme switching, and the custom mapping adds 30+ lines of @theme glue
+// for zero ergonomic gain. Layout primitives (flex, grid, sizing) DO use
+// Tailwind utilities — only color/typography that needs to track the
+// theme stays inline.
 
 import type { ReactNode } from "react";
 import {
