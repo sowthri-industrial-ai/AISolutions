@@ -18,7 +18,7 @@ via `next-mdx-remote` · Supabase (Postgres + pgvector) · Vercel AI SDK
 ## Get started
 
 ```bash
-# Pre-flight: Node 20+ (see .nvmrc), pnpm.
+# Pre-flight: Node 22+ (see .nvmrc), pnpm 11+ (matches package.json#packageManager).
 pnpm install
 cp .env.example .env.local   # fill in real values
 pnpm dev                     # http://localhost:3000
