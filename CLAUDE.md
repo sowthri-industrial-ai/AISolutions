@@ -129,6 +129,9 @@ Revisit a frontend/design plugin only once `portfoliowebsite/` development begin
 - **2026-05-23** — Branch protection on `main`; PR template + `.gitattributes` added; plugin/tooling guidance corrected to match how Claude Code actually works.
 - **2026-05-23** — `portfolio-website/` architecture authored; TECH-STACK.md spec drafted.
 - **2026-05-23** — Folder renamed `portfoliowebsite` → `portfolio-website` (hyphen per spec).
+- **2026-05-23** — `portfolio-website/` Next.js scaffold landed (PR #1 → `19b147b`): Next 16.2.6 + Tailwind v4 + shadcn/ui + MDX + Supabase + Vercel AI SDK; pnpm-managed.
+- **2026-05-25** — Slice 3 design implementation merged (PR #4 → `a4ef03a`): control-plane shell + Architecture tab + Agent Reaction tab at full fidelity; 5 skeleton tabs; routing `/control/[track]/[slug]/[tab]`; 23 vitest tests.
+- **2026-05-25** — TECH-STACK.md §6 reconciled (`faa658d`) to record the implemented `/control/[track]/[slug]/[tab]` route shape, ControlPlaneShell client wrapper, and the [slug]→/overview redirect.
 
 Authoritative history is `git log` + merged PRs — keep this list to high-level milestones only.
 
