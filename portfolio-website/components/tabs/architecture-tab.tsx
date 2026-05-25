@@ -11,6 +11,7 @@
 // the order semantic (rails are siblings of the stack, not floating
 // chrome) and reads cleanly in the DOM.
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   getProjectArchitecture,
@@ -27,6 +28,10 @@ interface ArchitectureTabProps {
 
 export function ArchitectureTab({ project }: ArchitectureTabProps) {
   const arch = getProjectArchitecture(project.id);
+  // Project base used for cross-tab links (e.g. the L4 "see Agent Reaction
+  // tab →" callout). Derived in this component rather than passed from the
+  // dispatcher so consumers don't need to know about the URL shape.
+  const projectBase = `/control/${project.track}/${project.id}`;
   if (!arch) {
     return (
       <div className="prose fade-up">
@@ -52,7 +57,13 @@ export function ArchitectureTab({ project }: ArchitectureTabProps) {
         ))}
       </p>
 
-      <ArchStack layers={arch.layers} leftRail={arch.leftRail} rightRail={arch.rightRail} plinth={arch.plinth} />
+      <ArchStack
+        layers={arch.layers}
+        leftRail={arch.leftRail}
+        rightRail={arch.rightRail}
+        plinth={arch.plinth}
+        projectBase={projectBase}
+      />
 
       <h3>Why this shape</h3>
       <p>{arch.whyThisShape}</p>
@@ -65,9 +76,10 @@ interface ArchStackProps {
   leftRail: ArchRail;
   rightRail: ArchRail;
   plinth: ArchPlinth;
+  projectBase: string;
 }
 
-function ArchStack({ layers, leftRail, rightRail, plinth }: ArchStackProps) {
+function ArchStack({ layers, leftRail, rightRail, plinth, projectBase }: ArchStackProps) {
   return (
     <div
       style={{
@@ -87,7 +99,7 @@ function ArchStack({ layers, leftRail, rightRail, plinth }: ArchStackProps) {
         {layers.map((layer, i) => (
           <span key={layer.id}>
             {i > 0 && <FlowChevron />}
-            <ArchBand layer={layer} alt={i % 2 === 1} />
+            <ArchBand layer={layer} alt={i % 2 === 1} projectBase={projectBase} />
           </span>
         ))}
       </div>
@@ -206,7 +218,15 @@ function ArchPlinthRow({ plinth }: { plinth: ArchPlinth }) {
   );
 }
 
-function ArchBand({ layer, alt }: { layer: ArchLayer; alt: boolean }) {
+function ArchBand({
+  layer,
+  alt,
+  projectBase,
+}: {
+  layer: ArchLayer;
+  alt: boolean;
+  projectBase: string;
+}) {
   return (
     <section
       style={{
@@ -255,13 +275,11 @@ function ArchBand({ layer, alt }: { layer: ArchLayer; alt: boolean }) {
           {layer.purpose}
         </div>
         {layer.crossLink && (
-          <a
-            href={layer.crossLink.target}
-            // Same-project navigation handled by the parent's <TabStrip>;
-            // here it's a plain hash-style hint so the link reads as content.
-            // TODO(tab-link): replace with a real <Link> once the tab href
-            // helper exposes the project base path (see decisions in PR body).
-            onClick={(e) => e.preventDefault()}
+          <Link
+            // crossLink.target is a tab slug (e.g. "agent-reaction"); joined
+            // with projectBase to form a real /control/<track>/<slug>/<tab>
+            // route. next/link gives us client-side navigation + prefetching.
+            href={`${projectBase}/${layer.crossLink.target}`}
             style={{
               display: "inline-block",
               marginTop: 8,
@@ -272,7 +290,7 @@ function ArchBand({ layer, alt }: { layer: ArchLayer; alt: boolean }) {
             }}
           >
             {layer.crossLink.label}
-          </a>
+          </Link>
         )}
       </div>
 
