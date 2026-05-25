@@ -333,51 +333,140 @@ These power the observability panel's *Eval, 24h* row and the *Replay* feature v
 
 ## 6. Two-surface routing
 
+### Route map (as implemented in PR #4)
+
+```
+/                                          → redirect to /control
+/control                                   → welcome workspace
+/control/[track]/[slug]                    → redirect to /overview
+/control/[track]/[slug]/[tab]              → workspace tab content
+/[track]                                   → static track index           (slice-4)
+/[track]/[slug]                            → static long-form case study  (slice-4)
+```
+
+The control-plane surface uses a **`[tab]` segment in the URL** so every tab
+is deep-linkable, server-rendered per request, and survives browser back/forward.
+The earlier draft of this section pinned the workspace at `/control/[track]/[slug]`
+with tab state held in client memory — that worked but lost shareable URLs and
+broke the back button between tabs. The `[tab]` variant resolves both.
+
 ### Layout structure
 
-```typescript
-// app/control/layout.tsx
-import { Sidebar, TopBar, ObservabilityPanel } from "@/components/control-plane";
+The chrome (top bar · sidebar · observability rail) wraps **every** `/control/*`
+page once via `app/control/layout.tsx`. The chrome itself is a thin server
+component that mounts a `<ControlPlaneShell>` client component, since the
+breadcrumb and sidebar-active state need to read URL segments via
+`useSelectedLayoutSegments()` — a client hook.
 
-export default function ControlPlaneLayout({ children }: { children: React.ReactNode }) {
+```typescript
+// app/control/layout.tsx — server component (thin wrapper)
+import { ControlPlaneShell } from "@/components/control-plane/shell";
+
+export default function ControlLayout({ children }: { children: React.ReactNode }) {
+  return <ControlPlaneShell>{children}</ControlPlaneShell>;
+}
+
+// components/control-plane/shell.tsx — client component
+"use client";
+import { useSelectedLayoutSegments } from "next/navigation";
+import { TopBar } from "@/components/control-plane/top-bar";
+import { Sidebar } from "@/components/control-plane/sidebar";
+import { ObsPanel } from "@/components/control-plane/obs-panel";
+import { projectByTrackAndSlug } from "@/lib/projects";
+
+export function ControlPlaneShell({ children }: { children: React.ReactNode }) {
+  const [track, slug] = useSelectedLayoutSegments();
+  const activeProject = track && slug ? projectByTrackAndSlug(track, slug) ?? null : null;
   return (
-    <div className="control-plane-shell h-screen flex flex-col">
-      <TopBar />
-      <div className="flex-1 grid grid-cols-[180px_1fr_200px] min-h-0">
-        <Sidebar />
-        <main className="overflow-y-auto">{children}</main>
-        <ObservabilityPanel />
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      <TopBar activeProject={activeProject} />
+      <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+        <Sidebar activeId={activeProject?.id ?? null} />
+        <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+          {children}
+        </main>
+        <ObsPanel project={activeProject} />
       </div>
     </div>
   );
 }
 ```
 
-### Project workspace route
+### Project workspace — nested layout + tab dispatcher
+
+A second layout under `[track]/[slug]/` mounts the project-aware chrome
+(header · tab strip · ask bar). The deeper `[tab]/page.tsx` then dispatches
+to the right tab component.
 
 ```typescript
-// app/control/[track]/[slug]/page.tsx
-import { Workspace } from "@/components/workspace";
-import { loadProject } from "@/lib/content";
+// app/control/[track]/[slug]/layout.tsx — server component
+import { notFound } from "next/navigation";
+import { WorkspaceShell } from "@/components/workspace/workspace-shell";
+import { isDocumented } from "@/components/workspace/tab-content";
+import { projectByTrackAndSlug, DEFAULT_TAB } from "@/lib/projects";
+import { trackById } from "@/lib/tracks";
 
-export default async function ProjectWorkspace({
+export default async function ProjectWorkspaceLayout({
+  children,
   params,
 }: {
+  children: React.ReactNode;
   params: Promise<{ track: string; slug: string }>;
 }) {
+  const { track: trackId, slug } = await params;
+  const project = projectByTrackAndSlug(trackId, slug);
+  const track = trackById(trackId);
+  if (!project || !track) notFound();
+  // App Router layouts don't see their descendant [tab] segment server-side,
+  // so the TabStrip self-derives the active tab from usePathname() on the
+  // client. DEFAULT_TAB is the SSR fallback for the underline state.
+  return (
+    <WorkspaceShell project={project} track={track} activeTab={DEFAULT_TAB}
+                    disabled={!isDocumented(project)}>
+      {children}
+    </WorkspaceShell>
+  );
+}
+
+// app/control/[track]/[slug]/page.tsx — redirect to default tab
+import { redirect, notFound } from "next/navigation";
+import { DEFAULT_TAB, projectByTrackAndSlug } from "@/lib/projects";
+
+export default async function ProjectIndexPage({
+  params,
+}: { params: Promise<{ track: string; slug: string }> }) {
   const { track, slug } = await params;
-  const project = await loadProject(track, slug);
-  if (!project) notFound();
-  return <Workspace project={project} />;
+  if (!projectByTrackAndSlug(track, slug)) notFound();
+  redirect(`/control/${track}/${slug}/${DEFAULT_TAB}`);
+}
+
+// app/control/[track]/[slug]/[tab]/page.tsx — tab dispatcher
+import { notFound } from "next/navigation";
+import { isValidTab, projectByTrackAndSlug, tabBySlug } from "@/lib/projects";
+import { trackById } from "@/lib/tracks";
+import { TabContent } from "@/components/workspace/tab-content";
+
+export default async function ProjectTabPage({
+  params,
+}: { params: Promise<{ track: string; slug: string; tab: string }> }) {
+  const { track, slug, tab } = await params;
+  const project = projectByTrackAndSlug(track, slug);
+  if (!project || !trackById(track) || !isValidTab(tab)) notFound();
+  return <TabContent project={project} tab={tabBySlug(tab)!} />;
 }
 ```
+
+The seven canonical tabs (`overview · architecture · agent-reaction · demo ·
+prompts · results · tradeoffs`) are declared in `lib/projects.ts` as the
+`TABS` array; `isValidTab(slug)` gates the URL space against invented tab
+names. `TabContent` is a thin dispatcher that maps tab slug → component.
 
 ### Static project page route
 
 ```typescript
-// app/[track]/[slug]/page.tsx
+// app/[track]/[slug]/page.tsx — slice-4 work, scaffold stub in main
 import { ProjectArticle } from "@/components/static-page";
-import { loadProject } from "@/lib/content";
+import { loadProject, listProjects } from "@/lib/content";
 
 export async function generateStaticParams() {
   const projects = await listProjects();
@@ -386,9 +475,7 @@ export async function generateStaticParams() {
 
 export default async function StaticProjectPage({
   params,
-}: {
-  params: Promise<{ track: string; slug: string }>;
-}) {
+}: { params: Promise<{ track: string; slug: string }> }) {
   const { track, slug } = await params;
   const project = await loadProject(track, slug);
   if (!project) notFound();
