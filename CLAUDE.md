@@ -92,9 +92,11 @@ which are independent codebases.
 - Read `portfolio-website/TECH-STACK.md` first. All implementation decisions defer to that
   document unless explicitly amended in this section.
 - Never modify root track folders or their CI workflows as part of portfolio-website work.
-- Adding a project to the portfolio = drop a folder under
-  `portfolio-website/content/{track}/{slug}/` per Section 5 of the spec. Do not create
-  the project's underlying codebase from here — that's a separate workstream.
+- Adding a project to the portfolio = follow the step-by-step guide in
+  [`portfolio-website/ADDING-A-PROJECT.md`](portfolio-website/ADDING-A-PROJECT.md) (folder
+  structure, copy-paste templates, fillable Claude brief). The schema it implements is
+  TECH-STACK.md §5. Do not create the project's underlying codebase from here — that's
+  a separate workstream (`gitprojectmanual.md` §6 covers track-level codebases).
 
 ## Conventions
 

@@ -157,6 +157,18 @@ e.g. `agenticai-project-1-add-data-loader`.
 
 ## 6. Workflow B — scaffolding a new project
 
+> **Scope.** This workflow adds a **track-level codebase** under
+> `<track>/projects/project-N/` — a self-contained project with its own
+> README, LICENSE, .gitignore, and per-project CI workflow at
+> `.github/workflows/ci-<track>-project-N.yml`.
+>
+> To add a **portfolio-website case study** (a content folder under
+> `portfolio-website/content/{track}/{slug}/`, rendered by the shared
+> portfolio app), see [`portfolio-website/ADDING-A-PROJECT.md`](./portfolio-website/ADDING-A-PROJECT.md)
+> instead. The two flows are independent: most projects eventually have
+> both a track codebase **and** a portfolio case study, but adding one
+> doesn't require the other.
+
 Example: adding a **4th project to the `agenticai` track** (`agenticai/projects/project-4`).
 The same steps work for any track and any next number.
 
