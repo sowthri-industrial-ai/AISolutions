@@ -10,6 +10,33 @@ stays; the dates flex.
 
 ---
 
+## Repository strategy update (2026-05-26)
+
+**Original plan:** Five GitHub repos (refinery-twin meta + refinery-usd-asset-library + refinery-data-fabric + cdu-digital-twin extension + refinery-isaac-scenarios) — see Phase 5 below.
+
+**Updated decision:** Single self-contained folder at `AISolutions/physicalai/projects/crudedistillationunit/`. All work — USD assets, Kit extension, data fabric, Isaac scenarios, recordings, scripts — lives in subfolders within this one project folder.
+
+**Why the change:**
+- One canonical place for a portfolio visitor / interviewer to browse
+- No cross-repo dependency management
+- Aligns with AISolutions repo's multi-project monorepo strategy (`agenticai/`, `assetsai/`, `physicalai/` tracks each with `projects/<name>/` subfolders)
+- Simpler git workflow — single feature-branch namespace, single CI workflow
+
+**Phase 5 below has been rewritten to reflect this.**
+
+**Subfolder structure** (target):
+- `asset-library/` — USD files (Phase 1)
+- `kit-extension/com.sowthri.cdutwin/` — Kit extension (Phase 2)
+- `data-fabric/` — Python data fabric service (Phase 3)
+- `isaac-scenarios/` — Isaac Sim scenarios (Phase 4)
+- `recordings/` — demo videos (Phase 5)
+- `docs/` — engineering and governance docs
+- `scripts/` — operational helpers (SCP, cloud start)
+
+See PROJECT_CHARTER.md §11 decision log entries for 2026-05-26.
+
+---
+
 ## Week 1 — Phase 0: Foundation
 
 **Theme:** Get the cloud GPU working with Omniverse Kit booting headlessly.
@@ -171,12 +198,14 @@ stays; the dates flex.
 
 **Theme:** Ship it.
 
-**Days 41-43: Repos**
+**Days 41-43: Polish and structure**
 
-- Create five GitHub repos (or refactor existing portfolio into them)
-- Push final code, verified to match what runs on the cloud instance
-- READMEs accurate, architecture diagrams render correctly
-- Each repo has its own quickstart that points at the operator runbook for full deployment
+- Verify subfolder structure is clean: asset-library/, kit-extension/, data-fabric/, isaac-scenarios/, recordings/, docs/, scripts/
+- Each subfolder has its own README.md briefly describing its role
+- Top-level README.md is polished — interview-grade narrative, architecture summary, demo video embed point, link to ARCHITECTURE.md
+- ARCHITECTURE.md final version with Mermaid diagrams (no separate repos needed — diagrams describe the integrated system)
+- All commits use the established convention; git log reads cleanly
+- Snapshot test: spin up fresh g6.xlarge from snapshot, follow OPERATOR_RUNBOOK, verify demo works end-to-end
 
 **Days 44-45: Recording + final snapshot**
 
