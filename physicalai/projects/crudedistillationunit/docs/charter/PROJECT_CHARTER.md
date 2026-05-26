@@ -402,6 +402,8 @@ decisions append; old decisions are never silently revised.
 | 2026-04-29 | Git auth via HTTPS + Personal Access Token (no SSH for git). | Owner preference. Token stored in keychain (Mac) and credential cache (cloud). |
 | 2026-04-29 | Kit extension Python namespace: `com.sowthri.cdutwin`. | Hyphens illegal in Python package names; `-industrial-ai` suffix dropped. |
 | 2026-04-29 | Repos public from day one. | Owner preference for transparency and recruiter-readability. Sensitive material kept strictly out of git per `GIT_WORKFLOW.md`. |
+| 2026-05-26 | Folder naming override: project-1 → crudedistillationunit | Override of gitprojectmanual.md §3 numbered-folder convention for the inaugural physicalai project. Descriptive name improves discoverability. Numbered convention can be reconsidered when project-2 is added. Captured in PR #6. |
+| 2026-05-26 | Single-folder repository strategy locked | Override of original ROADMAP.md "five repos" plan. All CrudeDistillationUnit work consolidated to AISolutions/physicalai/projects/crudedistillationunit/ with subfolders for asset-library, kit-extension, data-fabric, isaac-scenarios, recordings, docs, scripts. Captured in PRs #6, #7, #8. |
 
 ---
 

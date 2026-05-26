@@ -517,6 +517,102 @@ ps aux | grep -E "kit|Xvfb|x11vnc|websockify" | grep -v grep
 
 ---
 
+### Story 1.1 — Scene scaffold authored on cloud GPU (DONE 2026-05-26)
+
+**What was done:**
+- Authored 4 USD files manually via SSH cat-heredoc on cloud GPU instance i-084dcf23391e63165 (Mumbai, ap-south-1)
+- Files: cdu_demo.usd (composition root, 324B), cdu_geometry.usda (311B), cdu_materials.usda (257B), cdu_metadata.usda (348B)
+- 3-layer USD composition: geometry sublayer + materials sublayer + metadata sublayer, all composed by cdu_demo.usd
+- ISA-95 hierarchy locked: /World/RefinerySiteA/CDU_01
+- Z-up coordinate system, metersPerUnit = 1.0
+- UNS topic root: RefineryEnterprise/RefinerySiteA/CDU_01
+- All files SCP-transferred to Mac, MD5-verified intact
+
+**Result:**
+- 4 USD files committed to AISolutionPortfolio at ef0d865 (later migrated to AISolutions in PR #7)
+- MD5 hashes (preserved across all subsequent moves):
+  - cdu_demo.usd: 033faca65cb9530ee7d79ca0d0cd2a1f
+  - cdu_geometry.usda: 20982e3992788ab1485020c4cc8ae58b
+  - cdu_materials.usda: 0b8b92112f360d5025d130275758dffb
+  - cdu_metadata.usda: cd8094538556309c624e12c082d61c87
+
+**Important architectural note:**
+These 4 files were authored as text via SSH, NOT via Kit's UI File→New menu. The files have valid USDA syntax but have never been opened or rendered in Kit. Visual verification deferred to Story 1.6.
+
+**Issues encountered & resolution:**
+- VNC dropped during Kit File→New attempt early in session. Pivoted to hand-authoring via SSH heredoc (faster, more reliable, scriptable). This pivot is now the architectural pattern: text-author locally on Mac via Anti-gravity, verify in Kit on cloud later.
+
+---
+
+### Story 1.2-1.5 — Scene completion authored locally on Mac (DONE 2026-05-26)
+
+**What was done:**
+- Anti-gravity (local execution) authored full content into the three USDA sublayers
+- 5 equipment primitives added under /World/RefinerySiteA/CDU_01:
+  - Furnace_F101: Cube body (8×8×12m) + Cube stack (2×2×8m) at (15, 10, 0)
+  - Column_T101: vertical Cylinder, 4m diameter × 40m tall, axis Z, at (0, 0, 20)
+  - HeatExchanger_E101: horizontal Cylinder, 1.5m diameter × 8m, axis X, at (-12, 8, 0.75)
+  - HeatExchanger_E102: same dimensions as E101, at (-12, -8, 0.75)
+  - Pump_P101: Cube (1.5×1×1.5m) at (-18, 0, 0.75)
+- 4 USD Preview Surface materials authored in cdu_materials.usda:
+  - mat_furnace_steel (dark gray, metallic 0.7)
+  - mat_column_insulated (light gray, metallic 0.2)
+  - mat_exchanger_green (refinery green, metallic 0.5)
+  - mat_pump_teal (dark teal, metallic 0.6)
+- Material bindings via `over` opinions composing across layers
+- 21 parameters authored in cdu_metadata.usda as customData on equipment prims:
+  - Furnace: 4 params (inlet_temperature, outlet_temperature, fuel_flow, status)
+  - Column: 5 params (top_pressure, bottom_pressure, top_temperature, bottom_temperature, feed_rate)
+  - HeatExchanger E101, E102: 4 params each (hot/cold inlet/outlet temps)
+  - Pump: 4 params (flow_rate, suction_pressure, discharge_pressure, status)
+- 10 parameters flagged for Phase 3 OPC-UA binding via `bound_for_phase3` array
+
+**Result:**
+- 3 USDA files updated atomically in PR #8
+- File sizes: cdu_geometry.usda 2,878 B, cdu_materials.usda 3,197 B, cdu_metadata.usda 5,799 B
+- 253 insertions, 2 deletions
+- Merged at commit 696fe37 on main
+
+**Important:**
+Visual verification in Kit still deferred to Story 1.6. The text content is syntactically valid USDA and references compose correctly via the `over` pattern, but has not been opened in Kit on a cloud GPU yet.
+
+**Issues encountered & resolution:**
+- AWS Mumbai capacity unavailable late in the session, blocking Story 1.6 cloud verification. Track-B (non-GPU) work continues; Story 1.6 deferred until capacity returns.
+
+---
+
+### Story 1.6 — Cloud verification + Phase 1 snapshot (PENDING — AWS capacity blocked)
+
+**Blocking issue:** AWS ap-south-1 (Mumbai) g6.xlarge capacity unavailable as of 2026-05-26 evening. Previously hit this wall multiple times in this project (5-6 occurrences documented in Common Failure Modes). Capacity typically returns within hours to a few days.
+
+**What needs to be done when capacity returns:**
+- Start instance i-084dcf23391e63165 in ap-south-1
+- Restart Xvfb + x11vnc + websockify chain (per Story 0.7 runbook)
+- SSH tunnel from Mac, open noVNC in browser
+- `git pull` in cloud working directory to pick up PR #7 + #8 changes
+- Launch Kit via the kit-app-template launcher
+- Open cdu_demo.usd
+- Verify all 5 equipment render in viewport with correct materials applied
+- Verify metadata visible in Kit USD inspector
+- Take screenshots, save to docs/media/ in the repo
+- Take EBS snapshot named phase-1-complete-YYYYMMDD
+- Update this runbook with Story 1.6 actual record
+- Open small docs PR to commit screenshots + runbook update
+
+---
+
+### Migration milestones — three PRs landed 2026-05-26
+
+| PR | Commit on main | Title | Architect notes |
+|---|---|---|---|
+| #6 | da6e621 | refactor(physicalai): rename project-1 -> crudedistillationunit | Override of gitprojectmanual.md §3 numbered convention for inaugural physicalai project; descriptive folder names for discoverability |
+| #7 | c426c11 | feat(physicalai/crudedistillationunit): migrate from AISolutionPortfolio | Brought Phase 0 + Phase 1 Story 1.1 work into AISolutions repo; deleted orphan ci-physicalai-project-1.yml; created ci-physicalai-crudedistillationunit.yml |
+| #8 | 696fe37 | feat(physicalai/cdu): phase-1 Stories 1.2-1.5 — complete CDU scene authoring | 5 equipment + 4 materials + 21 parameters in 3 USDA files; atomic cross-reference contract |
+
+All three PRs: squash-merged, CI green, architect-reviewed at every halt point.
+
+---
+
 ### What's NOT done yet in Phase 0
 
 - **Story 0.8** — Phase 0 snapshot (EBS), document snapshot ID, test boot-from-snapshot (~15 min, ~$0.20)
