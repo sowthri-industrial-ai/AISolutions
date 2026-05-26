@@ -13,5 +13,96 @@ def Xform "World"
 {
     def Scope "Looks"
     {
+        def Material "mat_furnace_steel"
+        {
+            token outputs:surface.connect = </World/Looks/mat_furnace_steel/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.18, 0.18, 0.20)
+                float inputs:metallic = 0.7
+                float inputs:roughness = 0.5
+                token outputs:surface
+            }
+        }
+
+        def Material "mat_column_insulated"
+        {
+            token outputs:surface.connect = </World/Looks/mat_column_insulated/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.75, 0.75, 0.78)
+                float inputs:metallic = 0.2
+                float inputs:roughness = 0.7
+                token outputs:surface
+            }
+        }
+
+        def Material "mat_exchanger_green"
+        {
+            token outputs:surface.connect = </World/Looks/mat_exchanger_green/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.40, 0.55, 0.40)
+                float inputs:metallic = 0.5
+                float inputs:roughness = 0.4
+                token outputs:surface
+            }
+        }
+
+        def Material "mat_pump_teal"
+        {
+            token outputs:surface.connect = </World/Looks/mat_pump_teal/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.15, 0.35, 0.35)
+                float inputs:metallic = 0.6
+                float inputs:roughness = 0.4
+                token outputs:surface
+            }
+        }
+    }
+}
+
+# Bind materials to equipment via material:binding relationship overrides on the geometry prims.
+# These overrides reference prim paths defined in cdu_geometry.usda — they compose at layer-stack time.
+over "World"
+{
+    over "RefinerySiteA"
+    {
+        over "CDU_01"
+        {
+            over "Furnace_F101"
+            {
+                rel material:binding = </World/Looks/mat_furnace_steel>
+            }
+
+            over "Column_T101"
+            {
+                rel material:binding = </World/Looks/mat_column_insulated>
+            }
+
+            over "HeatExchanger_E101"
+            {
+                rel material:binding = </World/Looks/mat_exchanger_green>
+            }
+
+            over "HeatExchanger_E102"
+            {
+                rel material:binding = </World/Looks/mat_exchanger_green>
+            }
+
+            over "Pump_P101"
+            {
+                rel material:binding = </World/Looks/mat_pump_teal>
+            }
+        }
     }
 }

@@ -15,6 +15,67 @@ def Xform "World"
     {
         def Xform "CDU_01"
         {
+            # Furnace_F101 — body (8m × 8m × 12m) at (15, 10, 6) plus stack (2m × 2m × 8m) at (15, 10, 16)
+            def Xform "Furnace_F101"
+            {
+                double3 xformOp:translate = (15, 10, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+
+                def Cube "Body"
+                {
+                    double size = 1.0
+                    double3 xformOp:scale = (8, 8, 12)
+                    double3 xformOp:translate = (0, 0, 6)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+
+                def Cube "Stack"
+                {
+                    double size = 1.0
+                    double3 xformOp:scale = (2, 2, 8)
+                    double3 xformOp:translate = (0, 0, 16)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+            }
+
+            # Column_T101 — vertical cylinder, 4m diameter (radius 2), 40m tall, axis Z, centered with base at z=0
+            def Cylinder "Column_T101"
+            {
+                double radius = 2.0
+                double height = 40.0
+                uniform token axis = "Z"
+                double3 xformOp:translate = (0, 0, 20)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+            }
+
+            # HeatExchanger_E101 — horizontal cylinder, 1.5m diameter (radius 0.75), 8m long, axis X, at (-12, 8, 0.75)
+            def Cylinder "HeatExchanger_E101"
+            {
+                double radius = 0.75
+                double height = 8.0
+                uniform token axis = "X"
+                double3 xformOp:translate = (-12, 8, 0.75)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+            }
+
+            # HeatExchanger_E102 — same dimensions as E101, mirrored to (-12, -8, 0.75)
+            def Cylinder "HeatExchanger_E102"
+            {
+                double radius = 0.75
+                double height = 8.0
+                uniform token axis = "X"
+                double3 xformOp:translate = (-12, -8, 0.75)
+                uniform token[] xformOpOrder = ["xformOp:translate"]
+            }
+
+            # Pump_P101 — compact box, 1.5m × 1m × 1.5m at (-18, 0, 0.75)
+            def Cube "Pump_P101"
+            {
+                double size = 1.0
+                double3 xformOp:scale = (1.5, 1, 1.5)
+                double3 xformOp:translate = (-18, 0, 0.75)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
         }
     }
 }
