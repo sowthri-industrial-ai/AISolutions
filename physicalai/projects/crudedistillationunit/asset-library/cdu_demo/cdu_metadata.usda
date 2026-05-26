@@ -6,11 +6,110 @@
     customLayerData = {
         string layer_role = "metadata"
         string project = "CrudeDistillationUnit"
-        string isa95_root = "/RefinerySiteA/CDU_01"
+        string isa95_root = "/World/RefinerySiteA/CDU_01"
         string uns_topic_root = "RefineryEnterprise/RefinerySiteA/CDU_01"
+        string parameter_count_total = "21"
+        string parameter_count_bound_phase3 = "10"
     }
 )
 
-def Xform "World"
+# Metadata as customData overrides on each equipment prim defined in cdu_geometry.usda.
+over "World"
 {
+    over "RefinerySiteA"
+    {
+        over "CDU_01"
+        {
+            over "Furnace_F101"
+            {
+                customData = {
+                    string equipment_type = "Furnace"
+                    string tag_id = "F101"
+                    string isa95_path = "/World/RefinerySiteA/CDU_01/Furnace_F101"
+                    string uns_topic_prefix = "RefineryEnterprise/RefinerySiteA/CDU_01/Furnace_F101"
+                    string[] parameter_topics = [
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Furnace_F101/inlet_temperature",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Furnace_F101/outlet_temperature",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Furnace_F101/fuel_flow",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Furnace_F101/status"
+                    ]
+                    string[] parameter_units = ["degC", "degC", "kg/h", "enum"]
+                    string[] bound_for_phase3 = ["outlet_temperature", "fuel_flow"]
+                }
+            }
+
+            over "Column_T101"
+            {
+                customData = {
+                    string equipment_type = "Column"
+                    string tag_id = "T101"
+                    string isa95_path = "/World/RefinerySiteA/CDU_01/Column_T101"
+                    string uns_topic_prefix = "RefineryEnterprise/RefinerySiteA/CDU_01/Column_T101"
+                    string[] parameter_topics = [
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Column_T101/top_pressure",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Column_T101/bottom_pressure",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Column_T101/top_temperature",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Column_T101/bottom_temperature",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Column_T101/feed_rate"
+                    ]
+                    string[] parameter_units = ["kPa", "kPa", "degC", "degC", "m3/h"]
+                    string[] bound_for_phase3 = ["top_temperature", "bottom_temperature", "top_pressure", "feed_rate"]
+                }
+            }
+
+            over "HeatExchanger_E101"
+            {
+                customData = {
+                    string equipment_type = "HeatExchanger"
+                    string tag_id = "E101"
+                    string isa95_path = "/World/RefinerySiteA/CDU_01/HeatExchanger_E101"
+                    string uns_topic_prefix = "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E101"
+                    string[] parameter_topics = [
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E101/hot_inlet_temp",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E101/hot_outlet_temp",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E101/cold_inlet_temp",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E101/cold_outlet_temp"
+                    ]
+                    string[] parameter_units = ["degC", "degC", "degC", "degC"]
+                    string[] bound_for_phase3 = ["hot_outlet_temp"]
+                }
+            }
+
+            over "HeatExchanger_E102"
+            {
+                customData = {
+                    string equipment_type = "HeatExchanger"
+                    string tag_id = "E102"
+                    string isa95_path = "/World/RefinerySiteA/CDU_01/HeatExchanger_E102"
+                    string uns_topic_prefix = "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E102"
+                    string[] parameter_topics = [
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E102/hot_inlet_temp",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E102/hot_outlet_temp",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E102/cold_inlet_temp",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/HeatExchanger_E102/cold_outlet_temp"
+                    ]
+                    string[] parameter_units = ["degC", "degC", "degC", "degC"]
+                    string[] bound_for_phase3 = ["hot_outlet_temp"]
+                }
+            }
+
+            over "Pump_P101"
+            {
+                customData = {
+                    string equipment_type = "Pump"
+                    string tag_id = "P101"
+                    string isa95_path = "/World/RefinerySiteA/CDU_01/Pump_P101"
+                    string uns_topic_prefix = "RefineryEnterprise/RefinerySiteA/CDU_01/Pump_P101"
+                    string[] parameter_topics = [
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Pump_P101/flow_rate",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Pump_P101/suction_pressure",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Pump_P101/discharge_pressure",
+                        "RefineryEnterprise/RefinerySiteA/CDU_01/Pump_P101/status"
+                    ]
+                    string[] parameter_units = ["m3/h", "kPa", "kPa", "enum"]
+                    string[] bound_for_phase3 = ["flow_rate", "discharge_pressure"]
+                }
+            }
+        }
+    }
 }
