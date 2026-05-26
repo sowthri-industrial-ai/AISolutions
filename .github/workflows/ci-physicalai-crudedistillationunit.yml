@@ -1,0 +1,25 @@
+name: "CI · physicalai/crudedistillationunit"
+
+# Path-filtered: runs ONLY when this project's files change, so it never
+# overlaps with any other project's CI.
+on:
+  push:
+    paths:
+      - 'physicalai/projects/crudedistillationunit/**'
+      - '.github/workflows/ci-physicalai-crudedistillationunit.yml'
+  pull_request:
+    paths:
+      - 'physicalai/projects/crudedistillationunit/**'
+
+# Per-project concurrency group: rapid pushes to THIS project supersede each
+# other; other projects' workflows run in parallel, unaffected.
+concurrency:
+  group: ci-physicalai-crudedistillationunit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "CI stub for physicalai/projects/crudedistillationunit — add build & test steps here."
