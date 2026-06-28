@@ -1,0 +1,23 @@
+[
+  {"question": "What is the cold filter plugging point?", "type": "answer",
+   "must_cover": {
+     "temperature": ["temperature", "°c", "°f"],
+     "filter": ["filter"],
+     "low-temp operability": ["cold", "low temperature", "low-temperature", "operability", "plug"]}},
+  {"question": "How should biodiesel be stored?", "type": "answer",
+   "must_cover": {
+     "temperature/cloud point": ["cloud point", "temperature", "above"],
+     "keep dry / water": ["water", "moisture", "dry", "hygroscopic"],
+     "oxidation / storage life": ["oxidation", "stability", "antioxidant", "degrad", "storage life", "induction time", "acid number", "d6751", "shelf"],
+     "tank materials": ["copper", "brass", "bronze", "zinc", "material", "compatib", "elastomer"]}},
+  {"question": "What materials are not compatible with biodiesel?", "type": "answer",
+   "must_cover": {
+     "metals": ["copper", "brass", "bronze", "zinc", "lead", "tin"],
+     "seals / elastomers": ["elastomer", "rubber", "seal", "nitrile", "gasket"]}},
+  {"question": "Does biodiesel absorb water?", "type": "answer",
+   "must_cover": {
+     "absorbs water": ["water", "absorb", "hygroscopic", "moisture"],
+     "consequence": ["microb", "bacteria", "growth", "corros", "bug"]}},
+  {"question": "What is the octane rating of gasoline?", "type": "refuse"},
+  {"question": "What is the capital of France?", "type": "refuse"}
+]
