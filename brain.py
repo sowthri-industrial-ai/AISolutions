@@ -5,14 +5,14 @@ import retrieve as R
 
 print("loading brain:", config.BRAIN)
 _tok = AutoTokenizer.from_pretrained(config.BRAIN)
-_model = AutoModelForCausalLM.from_pretrained(config.BRAIN, torch_dtype=torch.bfloat16)
+_model = AutoModelForCausalLM.from_pretrained(config.BRAIN, torch_dtype=torch.bfloat16, device_map="cuda")
 _model.eval()
 
 REFUSAL = "I don't have a good match for that in the documents."
 
 def _generate(messages, max_new_tokens):
     text = _tok.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = _tok(text, return_tensors="pt")
+    inputs = _tok(text, return_tensors="pt").to(_model.device)
     with torch.no_grad():
         out = _model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False,
                               repetition_penalty=1.05, pad_token_id=_tok.eos_token_id)
